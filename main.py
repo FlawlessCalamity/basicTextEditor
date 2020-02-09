@@ -5,7 +5,18 @@ file_path = None
 
 
 class MainWindow(QMainWindow):
-    def closeEvent(self, e)
+    def closeEvent(self, e):
+        if not text_area.document().isModified():
+            return
+        answer = QMessageBox.question(
+            main_window, None,
+            'You have un saved changes. Would you like to save before closing?',
+            QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+        )
+        if answer & QMessageBox.Save:
+            save_as_dialog()
+        elif answer & QMessageBox.Cancel:
+            e.ignore()
 
 
 ################# application ###################
@@ -19,7 +30,7 @@ bte.setApplicationDisplayName('jksgf')
 ################# main window widget ###################
 ########################################################
 text_area = QPlainTextEdit()
-main_window = QMainWindow()
+main_window = MainWindow()
 main_window.setWindowTitle('Basic Text Editor')
 main_window.setCentralWidget(text_area)
 ################# main window widget ###################
@@ -63,6 +74,7 @@ def save_dialog():
     else:
         with open(file_path, 'w') as f:
             f.write(text_area.toPlainText())
+        text_area.document().setModified(False)
 
 
 def save_as_dialog():
